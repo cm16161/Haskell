@@ -59,6 +59,6 @@ instance Applicative Maybe where
     -- pure :: a -> List a
     pure x = Cons x Empty
     -- (<*>) :: f (a->b) -> f a -> f b
-    Empty <*> Empty = Empty
-    (Cons x xs) <*> Empty = Cons x Cons(xs Empty)
-    (Cons x xs) <*> (Cons y ys) = Cons x Cons(xs (Cons y (Cons ys Empty))) 
+    -- f <*> Empty = Empty
+    (Cons f fs) <*> Empty = Empty
+    (Cons f fs) <*>  xs = Cons f y Cons(f ys Empty) <> Cons fs y Cons (fs ys Empty)

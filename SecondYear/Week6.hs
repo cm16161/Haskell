@@ -47,7 +47,7 @@ instance Applicative Maybe where
 
   (<$) :: a -> List b -> List a
   x <$ Empty = Empty
-  x <$ (Cons y ys) = fmap (const x) (Cons y ys)
+  x <$ (Cons y ys) =  const x <$> Cons y ys
 
     {-  5 <$ [1,2,3]  -> [5,5,5]
 
@@ -61,4 +61,32 @@ instance Applicative Maybe where
     -- (<*>) :: f (a->b) -> f a -> f b
     -- f <*> Empty = Empty
     (Cons f fs) <*> Empty = Empty
-    (Cons f fs) <*>  xs = Cons f y Cons(f ys Empty) <> Cons fs y Cons (fs ys Empty)
+    Empty <*> xs = Empty
+    (Cons f fs) <*>  xs = (f <$> xs) <> (fs <*> xs)
+
+  (<*) :: List a -> List b -> List a
+  Empty <* _ = Empty
+  _ <* Empty = Empty
+  (Cons x xs) <* ys = (const x <$> ys) <> (xs <* ys)
+
+  (*>) :: List a -> List b -> List b
+  Empty *> _ = Empty
+  _ *> Empty = Empty
+  (Cons x xs) *> ys = flip const x <$> ys <> (xs *> ys)
+
+  class (Applicative f) => Alternative f where
+    empty :: f a
+    (<|>) :: f a -> f a -> f a
+
+  instance Alternative List where
+    -- empty :: List a
+    empty = Empty
+
+    -- (<|>) :: List a -> List a -> List a
+    xs <|> Empty = xs
+    Empty <|> xs = xs
+    x <|> y = x <> y
+
+
+  liftATwo :: Applicative f => (a->b->c) -> f a -> f b -> f c
+  liftATwo g x y = g <$> x <*> y 
